@@ -4,27 +4,29 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QWidget>
+#include <filesystem>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class Widget; }
+namespace Ui {
+    class Widget;
+}
 QT_END_NAMESPACE
 
-class Widget : public QWidget
-{
+class Widget : public QWidget {
     Q_OBJECT
 
 public:
-    Widget(QWidget *parent = nullptr);
+    Widget(QWidget* parent = nullptr);
     ~Widget();
 
 private:
     void showText(QString str);
 
 private slots:
-    void on_toQtBool(bool value)             ;
-    void on_toQtDouble(double value)         ;
-    void on_toQtString(QString value)        ;
-    void on_toQtJsonArray(QJsonArray value)  ;
+    void on_toQtBool(bool value);
+    void on_toQtDouble(double value);
+    void on_toQtString(QString value);
+    void on_toQtJsonArray(QJsonArray value);
     void on_toQtJsonObject(QJsonObject value);
 
     void on_but_bool_clicked();
@@ -38,24 +40,22 @@ private slots:
     void on_but_object_clicked();
 
 private:
-    Ui::Widget *ui;
+    Ui::Widget* ui;
 };
 
 /**
  * @brief  Qt和Web端交互的中介单例类
  */
-class Core : public QObject
-{
+class Core : public QObject {
     Q_OBJECT
-    Q_PROPERTY(int value READ value WRITE setValue NOTIFY valueChanged)  // 定义一个属性，javascript可以读取属性值
+    Q_PROPERTY(int value READ value WRITE setValue NOTIFY valueChanged) // 定义一个属性，javascript可以读取属性值
 
 public:
-    enum CoreEnum
-    {
+    enum CoreEnum {
         Value1 = 100,
         Value2
     };
-    Q_ENUM(CoreEnum)    // 使用Q_ENUM标记的枚举，javascript可以直接访问
+    Q_ENUM(CoreEnum) // 使用Q_ENUM标记的枚举，javascript可以直接访问
 
 public:
     static Core* getInstance()
@@ -64,8 +64,8 @@ public:
         return &core;
     }
 
-    int value() {return m_value;}
-    void setValue(int v) {m_value = v;}
+    int value() { return m_value; }
+    void setValue(int v) { m_value = v; }
 
 signals:
     void valueChanged();
@@ -94,11 +94,11 @@ public slots:
      * @brief     Web端需要调用Qt槽函数来传递，必须声明为public slots，否则web找不到
      * @param str
      */
-    void on_toQtBool(bool value)              {emit toQtBool(value);}
-    void on_toQtDouble(double value)          {emit toQtDouble(value);}
-    void on_toQtString(QString value)         {emit toQtString(value);}
-    void on_toQtJsonArray(QJsonArray value)   {emit toQtJsonArray(value);}
-    void on_toQtJsonObject(QJsonObject value) {emit toQtJsonObject(value);}
+    void on_toQtBool(bool value) { emit toQtBool(value); }
+    void on_toQtDouble(double value) { emit toQtDouble(value); }
+    void on_toQtString(QString value) { emit toQtString(value); }
+    void on_toQtJsonArray(QJsonArray value) { emit toQtJsonArray(value); }
+    void on_toQtJsonObject(QJsonObject value) { emit toQtJsonObject(value); }
 
     /**
      * @brief        定义一个带有返回值的槽函数，javascript调用该函数后可以获取返回值
@@ -106,6 +106,7 @@ public slots:
      * @return
      */
     QString on_returnValue(int value);
+
 private:
     int m_value = 10;
 };

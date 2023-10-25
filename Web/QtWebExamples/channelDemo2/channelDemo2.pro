@@ -20,7 +20,10 @@ QT       += core gui webenginewidgets webchannel
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+include(file_copies.prf)
+CONFIG += file_copies
+CONFIG += c++20
+CONFIG += sdk_no_version_check
 DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
@@ -30,7 +33,7 @@ HEADERS += widget.h
 FORMS += widget.ui
 
 #  定义程序版本号
-VERSION = 1.0.1
+VERSION = 1.0.0
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 contains(QT_ARCH, i386){        # 使用32位编译器
@@ -40,9 +43,11 @@ contains(QT_ARCH, i386){        # 使用32位编译器
 }
 
 # 程序编译后需要使用nmake install（msvc）或make install (linux)将web2文件夹拷贝到当前路径下，或者自己手动拷贝
-webFile.path = $$DESTDIR
 webFile.files = $$PWD/web2
-INSTALLS += webFile      # 将web文件夹拷贝到path路径下，需要配置Custom Process Step: nmake install才生效
+webFile.path = $$DESTDIR/web2
+COPIES += webFile              # 将web文件夹拷贝到path路径下
+APP_ENTRY = $$DESTDIR/web2/index.html
+DEFINES += APP_ENTRY=\\\"$$APP_ENTRY\\\"
 
 # msvc >= 2017  编译器使用utf-8编码
 msvc {
@@ -53,3 +58,6 @@ msvc {
         message(msvc2015及以下版本在代码中使用【pragma execution_character_set("utf-8")】指定编码)
     }
 }
+
+DISTFILES += \
+    file_copies.prf

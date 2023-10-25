@@ -1,22 +1,31 @@
 #include "widget.h"
-#include "ui_widget.h"
-#include <QJsonDocument>
-#include <QTime>
+
 #include <qdir.h>
 #include <qwebchannel.h>
 
-Widget::Widget(QWidget *parent)
+#include <QJsonDocument>
+#include <QTime>
+
+#include "ui_widget.h"
+
+Widget::Widget(QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    this->setWindowTitle(QString("使用QtWebChannel实现Qt与Web通信交互（2），进阶功能 - V%1").arg(APP_VERSION));  // 设置窗口标题
+    this->setWindowTitle(QString("使用QtWebChannel实现Qt与Web通信交互（2），进阶功能 - V%1").arg(APP_VERSION)); // 设置窗口标题
 
     QWebChannel* channel = new QWebChannel(this);
-    channel->registerObject("CoreId", Core::getInstance());  // 向QWebChannel注册用于Qt和Web交互的对象。
+    channel->registerObject("CoreId", Core::getInstance()); // 向QWebChannel注册用于Qt和Web交互的对象。
 
-    ui->webEngineView->page()->setWebChannel(channel);       // 将与webEngineView要使用的web通道实例设置为channel
-    ui->webEngineView->setUrl(QDir("./web2/webClient.html").absolutePath());
+    ui->webEngineView->page()->setWebChannel(channel); // 将与webEngineView要使用的web通道实例设置为channel
+
+    QDir qf(APP_ENTRY);
+    QFile file(qf.absolutePath());
+    if (!file.exists()) {
+        return;
+    }
+    ui->webEngineView->setUrl("file:///" + qf.absolutePath()); // 需要加前缀协议
 
     // 绑定槽函数，接收web界面中javascript传递过来的信号
     connect(Core::getInstance(), &Core::toQtBool, this, &Widget::on_toQtBool);
@@ -72,7 +81,6 @@ void Widget::on_toQtJsonObject(QJsonObject value)
     doc.setObject(value);
     ui->textEdit->append(QString("QJsonArray类型数据：%1").arg(doc.toJson().data()));
 }
-
 
 /**
  * @brief 发送Bool类型数据
